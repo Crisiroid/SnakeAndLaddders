@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -87,13 +88,13 @@ public class GameMainLoader extends Application {
          */
         playerOne = new Circle(40);
         playerOne.setId("playerOne");
-        playerOne.getStyleClass().add("style.css");
+        playerOne.setFill(Color.BISQUE);
         playerOne.setTranslateX(playerOnexPos);
         playerOne.setTranslateY(playerOneyPos);
 
         playerTwo = new Circle(40);
         playerTwo.setId("playerTwo");
-        playerTwo.getStyleClass().add("style.css");
+        playerTwo.setFill(Color.PINK);
         playerTwo.setTranslateX(playerTwoxPos);
         playerTwo.setTranslateY(playerTwoyPos);
 
@@ -202,7 +203,7 @@ public class GameMainLoader extends Application {
                 positionCirOne ++;
             }
 
-            if(playerOnexPos < 40 || playerOneyPos < 40){
+            if(playerOnexPos < 30 || playerOneyPos < 30){
                 playerOnexPos = 40;
                 playerOneyPos = 40;
                 randInt.setText("player One Won!");
@@ -230,7 +231,7 @@ public class GameMainLoader extends Application {
                 positionCirTwo ++;
             }
 
-            if(playerTwoxPos < 40 || playerTwoyPos < 40){
+            if(playerTwoxPos < 30 || playerTwoyPos < 30){
                 playerTwoxPos = 40;
                 playerTwoyPos = 40;
                 randInt.setText("player Two Won!");
