@@ -1,5 +1,6 @@
 package com.example.s_a_l;
 
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,7 +13,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
+import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class GameMainLoader extends Application {
     //Declaring required variables
@@ -39,6 +42,9 @@ public class GameMainLoader extends Application {
     public static int playerOneyPos = 760;
     public static int playerTwoxPos = 40;
     public static int playerTwoyPos = 760;
+
+    public int positionCirOne = 1;
+    public int positionCirTwo = 1;
 
     public boolean gameStart = false;
     public Button gameStartBtn;
@@ -103,7 +109,12 @@ public class GameMainLoader extends Application {
             public void handle(ActionEvent actionEvent) {
                 if(gameStart){
                     if(playerOneTurn){
-
+                        getRandomNumberForDice();
+                        randInt.setText(String.valueOf(rand));
+                        movePlayerOne();
+                        translatePlayer(playerOnexPos, playerOneyPos, playerOne);
+                        playerOneTurn = false;
+                        playerTwoTurn = true;
                     }
                 }
             }
@@ -116,7 +127,12 @@ public class GameMainLoader extends Application {
             public void handle(ActionEvent actionEvent) {
                 if(gameStart){
                     if(playerTwoTurn){
-
+                        getRandomNumberForDice();
+                        randInt.setText(String.valueOf(rand));
+                        movePlayerTwo();
+                        translatePlayer(playerTwoxPos, playerTwoyPos, playerTwo);
+                        playerTwoTurn = false;
+                        playerOneTurn = true;
                     }
                 }
             }
@@ -127,6 +143,7 @@ public class GameMainLoader extends Application {
         gameStartBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                gameStart = true;
                 gameStartBtn.setText("Game is Started");
                 playerOnexPos = 40;
                 playerOneyPos = 760;
@@ -151,19 +168,83 @@ public class GameMainLoader extends Application {
             first we set the location.
             then we use Imageview to show it
          */
-        Image img = new Image("");
-        ImageView bgImage = new ImageView();
-        bgImage.setImage(img);
-        bgImage.setFitHeight(800);
-        bgImage.setFitHeight(800);
 
-        tileGroup.getChildren().addAll(playerOne, playerTwo, bgImage, btn, btnTwo, gameStartBtn);
+        tileGroup.getChildren().addAll(playerOne, playerTwo, btn, btnTwo, gameStartBtn, randInt);
         return root;
     }
 
     //main function; nothing special
     public static void main(String[] args) {
         launch(args);
+    }
+
+    //creating dice functionality
+    private void getRandomNumberForDice(){
+        rand = (int)(Math.random()*6+1);
+    }
+    //rules for moving player one
+    private void movePlayerOne(){
+        for(int i = 0; i < rand; i++){
+            if(positionCirOne %2 == 1){
+                playerOnexPos += 80;
+            }
+            if(positionCirOne%2 == 0){
+                playerOnexPos -=80;
+            }
+            if(playerOnexPos > 760){
+                playerOneyPos -=80;
+                playerOnexPos -=80;
+                positionCirOne ++;
+            }
+            if(playerOnexPos < 40){
+                playerOneyPos -= 80;
+                playerOnexPos += 80;
+                positionCirOne ++;
+            }
+
+            if(playerOnexPos < 40 || playerOneyPos < 40){
+                playerOnexPos = 40;
+                playerOneyPos = 40;
+                randInt.setText("player One Won!");
+                gameStartBtn.setText("Start Again!");
+            }
+        }
+    }
+    //rules for moving player two
+    private void movePlayerTwo(){
+        for(int i = 0; i < rand; i++){
+            if(positionCirTwo %2 == 1){
+                playerTwoxPos += 80;
+            }
+            if(positionCirTwo%2 == 0){
+                playerTwoxPos -=80;
+            }
+            if(playerTwoxPos > 760){
+                playerTwoyPos -=80;
+                playerTwoxPos -=80;
+                positionCirTwo ++;
+            }
+            if(playerTwoxPos < 40){
+                playerTwoyPos -= 80;
+                playerTwoxPos += 80;
+                positionCirTwo ++;
+            }
+
+            if(playerTwoxPos < 40 || playerTwoyPos < 40){
+                playerTwoxPos = 40;
+                playerTwoyPos = 40;
+                randInt.setText("player Two Won!");
+                gameStartBtn.setText("Start Again!");
+            }
+        }
+    }
+    //creating main animation for moving players
+    private void translatePlayer(int x, int y, Circle b){
+        TranslateTransition animate = new TranslateTransition(Duration.millis(1000), b);
+        animate.setToX(x);
+        animate.setToY(y);
+        animate.setAutoReverse(false);
+        animate.play();
     }
     //required start function. it's used to start the game
     @Override
