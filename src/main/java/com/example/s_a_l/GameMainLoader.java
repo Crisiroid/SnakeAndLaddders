@@ -1,10 +1,15 @@
 package com.example.s_a_l;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -33,9 +38,11 @@ public class GameMainLoader extends Application {
     public static int playerOnexPos = 40;
     public static int playerOneyPos = 760;
     public static int playerTwoxPos = 40;
-    public static int playerTwoyPos = 740;
+    public static int playerTwoyPos = 760;
 
     public boolean gameStart = false;
+    public Button gameStartBtn;
+
     /*
     tileGroup is a list of objects that are displayed on application
     Players, tiles, snakes and ladders are some objects that are available here
@@ -81,12 +88,79 @@ public class GameMainLoader extends Application {
         playerTwo = new Circle(40);
         playerTwo.setId("playerTwo");
         playerTwo.getStyleClass().add("style.css");
-        playerTwo.setTranslateX(playerOnexPos);
-        playerTwo.setTranslateY(playerOneyPos);
+        playerTwo.setTranslateX(playerTwoxPos);
+        playerTwo.setTranslateY(playerTwoyPos);
 
-        tileGroup.getChildren().addAll(playerOne, playerTwo);
+        /*
+        Creating two button for rolling dice
+        each button will be used for one player
+         */
+        Button btn = new Button("Player One Start");
+        btn.setTranslateX(620);
+        btn.setTranslateY(820);
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if(gameStart){
+                    if(playerOneTurn){
+
+                    }
+                }
+            }
+        });
+        Button btnTwo = new Button("Player Two Start");
+        btnTwo.setTranslateX(80);
+        btnTwo.setTranslateY(820);
+        btnTwo.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if(gameStart){
+                    if(playerTwoTurn){
+
+                    }
+                }
+            }
+        });
+        gameStartBtn = new Button("Start the game");
+        gameStartBtn.setTranslateX(380);
+        gameStartBtn.setTranslateY(820);
+        gameStartBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                gameStartBtn.setText("Game is Started");
+                playerOnexPos = 40;
+                playerOneyPos = 760;
+
+                playerTwoxPos = 40;
+                playerTwoyPos = 760;
+
+                playerOne.setTranslateX(playerOnexPos);
+                playerOne.setTranslateY(playerOneyPos);
+                playerTwo.setTranslateX(playerTwoxPos);
+                playerTwo.setTranslateY(playerTwoyPos);
+
+            }
+        });
+
+        randInt = new Label("0");
+        randInt.setTranslateX(300);
+        randInt.setTranslateY(820);
+
+        /*
+        creating a snake image and showing it:
+            first we set the location.
+            then we use Imageview to show it
+         */
+        Image img = new Image("");
+        ImageView bgImage = new ImageView();
+        bgImage.setImage(img);
+        bgImage.setFitHeight(800);
+        bgImage.setFitHeight(800);
+
+        tileGroup.getChildren().addAll(playerOne, playerTwo, bgImage, btn, btnTwo, gameStartBtn);
         return root;
     }
+
     //main function; nothing special
     public static void main(String[] args) {
         launch(args);
