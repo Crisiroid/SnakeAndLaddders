@@ -7,7 +7,9 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -23,18 +25,18 @@ public class GameMainLoader extends Application {
     public Label randInt;
     public Label whoTurn;
 
-    public int cPos[][] = new int [10][10];
-    public int ladderSnakePosition [][] = new int[6][3];
-
     public static final int t_size = 80;
-    public static final int width = 20;
+    public static final int width = 12;
     public static final int height = 12;
+    public int snakeNumber = 3;
+    public int ladderNumber = 4;
 
     public Circle playerOne;
     public Circle playerTwo;
+    public Circle[] snake = new Circle[10];
+    public Circle ladder;
 
-    public int playerOnePosition = 1;
-    public int playerTwoPosition = 1;
+    public Button btn, btnTwo;
 
     public boolean playerOneTurn = true;
     public boolean playerTwoTurn = true;
@@ -58,17 +60,11 @@ public class GameMainLoader extends Application {
     Players, tiles, snakes and ladders are some objects that are available here
      */
     private Group tileGroup = new Group();
-
-    //A function to Create scene and its content
-    private Parent createContent(){
+    private Parent createContent() {
         Pane root = new Pane();
-        /*
-        this part is pretty simple:
-            we create a page with required height and width
-            if we need more width or height, we can change it dynamically
-            +80 for height is for required buttons and things like that.
-         */
-        root.setPrefSize((width*t_size)+150, (height * t_size));
+
+        //Setting the main size for Our root pane. it can be changed dynamically
+        root.setPrefSize((width * t_size) + 160, (height * t_size));
         root.getChildren().addAll(tileGroup);
 
         /*
@@ -76,8 +72,8 @@ public class GameMainLoader extends Application {
             Tile.java file.
             the number of tiles is based on height and width
          */
-        for(int i = 0; i < height; i++){
-            for(int j = 0; j < width; j++){
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
                 Tile tile = new Tile(t_size, t_size, i, j);
                 tile.setTranslateX(j * t_size);
                 tile.setTranslateY(i * t_size);
@@ -86,11 +82,8 @@ public class GameMainLoader extends Application {
                 tileGroup.getChildren().add(tileText);
             }
         }
-        /*
-        Creating PLayers and styling it:
-            player one is a simple circle with some color
-            the following code is setting its position and creating it.
-         */
+
+        //Creating player one
         playerOne = new Circle(30);
         playerOne.setId("playerOne");
         playerOne.setFill(Color.BISQUE);
@@ -98,6 +91,59 @@ public class GameMainLoader extends Application {
         playerOne.setTranslateX(playerOnexPos);
         playerOne.setTranslateY(playerOneyPos);
 
+        //Creating a Button for player number 1
+        btn = new Button("Player One Start");
+        btn.setTranslateX((width * 80) + 10);
+        btn.setTranslateY(60);
+        btn.setFont(new Font(16));
+        btn.setStyle("-fx-background-color: #ff0000");
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (gameStart) {
+                    if (playerOneTurn) {
+                        btn.setStyle("-fx-background-color: #ff0000");
+                        btnTwo.setStyle("-fx-background-color: #0ec700");
+                        if (!onesFirstStart) {
+                            getRandomNumberForDice();
+                            randInt.setText("Dice Value: " + String.valueOf(rand));
+                            if (rand < 6) {
+                                onesFirstStart = false;
+                                whoTurn.setText("One need 6");
+                                playerTwoTurn = true;
+                                playerOneTurn = false;
+                            } else {
+                                onesFirstStart = true;
+                                whoTurn.setText("Reward for One");
+                                btnTwo.setStyle("-fx-background-color: #ff0000");
+                                btn.setStyle("-fx-background-color: #0ec700");
+                                playerTwoTurn = false;
+                                playerOneTurn = true;
+                            }
+                        } else {
+                            getRandomNumberForDice();
+                            randInt.setText("Dice Value: " + String.valueOf(rand));
+                            movePlayerOne();
+                            translatePlayer(playerOnexPos, playerOneyPos, playerOne);
+                            if (rand == 6) {
+                                whoTurn.setText("Reward for One");
+                                btnTwo.setStyle("-fx-background-color: #ff0000");
+                                btn.setStyle("-fx-background-color: #0ec700");
+                                playerTwoTurn = false;
+                                playerOneTurn = true;
+                            } else {
+                                whoTurn.setText("Player Two's turn!");
+                                playerOneTurn = false;
+                                playerTwoTurn = true;
+                            }
+                        }
+
+                    }
+                }
+            }
+        });
+
+        //Creating player two
         playerTwo = new Circle(30);
         playerTwo.setId("playerTwo");
         playerTwo.setStroke(Color.BLACK);
@@ -105,84 +151,47 @@ public class GameMainLoader extends Application {
         playerTwo.setTranslateX(playerTwoxPos);
         playerTwo.setTranslateY(playerTwoyPos);
 
-        /*
-        Creating two button for rolling dice
-        each button will be used for one player
-         */
-        Button btn = new Button("Player One Start");
-        btn.setTranslateX((width*80) + 10);
-        btn.setTranslateY(60);
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(gameStart){
-                    if(playerOneTurn){
-                        if(!onesFirstStart){
-                            getRandomNumberForDice();
-                            randInt.setText("Dice Value: "+String.valueOf(rand));
-                            if(rand < 6){
-                                onesFirstStart = false;
-                                whoTurn.setText("One need 6");
-                                playerTwoTurn = true;
-                                playerOneTurn = false;
-                            }
-                            else{
-                                onesFirstStart = true;
-                                whoTurn.setText("Reward for One");
-                                playerTwoTurn = false;
-                                playerOneTurn = true;
-                            }
-                        }else{
-                            getRandomNumberForDice();
-                            randInt.setText("Dice Value: "+String.valueOf(rand));
-                            movePlayerOne();
-                            translatePlayer(playerOnexPos, playerOneyPos, playerOne);
-                            if(rand == 6){
-                                whoTurn.setText("Reward for One");
-                                playerTwoTurn = false;
-                                playerOneTurn = true;
-                            }
-                            whoTurn.setText("Player Two's turn!");
-                            playerOneTurn = false;
-                            playerTwoTurn = true;
-                        }
-
-                    }
-                }
-            }
-        });
-        Button btnTwo = new Button("Player Two Start");
-        btnTwo.setTranslateX((width*80) + 10);
+        //Creating a button for Player Number 2
+        btnTwo = new Button("Player Two Start");
+        btnTwo.setTranslateX((width * 80) + 10);
         btnTwo.setTranslateY(120);
+        btnTwo.setFont(new Font(16));
+        btnTwo.setStyle("-fx-background-color: #ff0000");
         btnTwo.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                if(gameStart){
-                    if(playerTwoTurn){
-                        if(!twosFirstStart){
+                if (gameStart) {
+                    if (playerTwoTurn) {
+                        btnTwo.setStyle("-fx-background-color: #ff0000");
+                        btn.setStyle("-fx-background-color: #0ec700");
+                        if (!twosFirstStart) {
                             getRandomNumberForDice();
-                            randInt.setText("Dice Value: "+String.valueOf(rand));
-                            if(rand < 6){
+                            randInt.setText("Dice Value: " + String.valueOf(rand));
+                            if (rand < 6) {
                                 twosFirstStart = false;
                                 whoTurn.setText("Two need 6");
                                 playerTwoTurn = false;
                                 playerOneTurn = true;
-                            }else{
+                            } else {
                                 twosFirstStart = true;
                                 whoTurn.setText("Reward for Two");
+                                btn.setStyle("-fx-background-color: #ff0000");
+                                btnTwo.setStyle("-fx-background-color: #0ec700");
                                 playerTwoTurn = true;
                                 playerOneTurn = false;
                             }
-                        }else {
+                        } else {
                             getRandomNumberForDice();
                             randInt.setText("Dice Value: " + String.valueOf(rand));
                             movePlayerTwo();
                             translatePlayer(playerTwoxPos, playerTwoyPos, playerTwo);
-                            if(rand == 6){
+                            if (rand == 6) {
                                 whoTurn.setText("Reward for Two");
+                                btn.setStyle("-fx-background-color: #ff0000");
+                                btnTwo.setStyle("-fx-background-color: #0ec700");
                                 playerTwoTurn = true;
                                 playerOneTurn = false;
-                            }else{
+                            } else {
                                 whoTurn.setText("Player One's turn!");
                                 playerTwoTurn = false;
                                 playerOneTurn = true;
@@ -192,19 +201,24 @@ public class GameMainLoader extends Application {
                 }
             }
         });
+
+        //A button for starting the game. it can be used to Restart the game as well
         gameStartBtn = new Button("Start the game");
-        gameStartBtn.setTranslateX((width*80) + 10);
+        gameStartBtn.setTranslateX((width * 80) + 10);
         gameStartBtn.setTranslateY(20);
+        gameStartBtn.setFont(new Font(16));
+        gameStartBtn.setStyle("-fx-background-color: #ff0000");
         gameStartBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 gameStart = true;
                 gameStartBtn.setText("Game is Started");
+                gameStartBtn.setStyle("-fx-background-color: #0ec700");
                 playerOnexPos = 40;
-                playerOneyPos = (height*80-40);
+                playerOneyPos = (height * 80 - 40);
 
                 playerTwoxPos = 40;
-                playerTwoyPos = (height*80-40);
+                playerTwoyPos = (height * 80 - 40);
 
                 playerOne.setTranslateX(playerOnexPos);
                 playerOne.setTranslateY(playerOneyPos);
@@ -214,38 +228,85 @@ public class GameMainLoader extends Application {
             }
         });
 
+        //Creator Button
+        Button creatorBtn = new Button("Creator");
+        creatorBtn.setTranslateX((width * 80) + 10);
+        creatorBtn.setTranslateY((height * 80) - 120);
+        creatorBtn.setFont(new Font(20));
+        Alert creator = new Alert(Alert.AlertType.INFORMATION, "This game is created by: \r" +
+                "Crisiroid\r" +
+                "Amir Sajjad Hosein Pour\r" +
+                "Winter 2022", ButtonType.OK);
+        creator.setHeaderText("Creator");
+        creator.setTitle("Creator");
+        creatorBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                creator.showAndWait();
+                if(creator.getResult() == ButtonType.OK){
+                    creator.close();
+                }
+            }
+        });
+
+        //Rules button
+        Button rulesbtn = new Button("Game Rules");
+        rulesbtn.setTranslateX((width * 80) + 10);
+        rulesbtn.setTranslateY(height * 80 - 50);
+        rulesbtn.setFont(new Font(20));
+        rulesbtn.setTextFill(Color.BLACK);
+        Alert gamerules = new Alert(Alert.AlertType.INFORMATION, "Welcome to Snake and Ladders game. \r" +
+                "For playing this game, we need to players.\r" +
+                "Each player has to roll the dice until the first 6 reveals.\r" +
+                "Players can't start the game without finding the first 6.\r" +
+                "The First player who reaches the end wins. \r" +
+                "Red Dots with number indicated Snakes. snakes will change the position of player based on their numbers. \r" +
+                "Green Dots with number indicated ladder. ladder will change the position of player based on their numbers.", ButtonType.OK);
+        gamerules.setHeaderText("Game Rules");
+        gamerules.setTitle("Game Rules");
+        rulesbtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                gamerules.showAndWait();
+                if(gamerules.getResult() == ButtonType.OK){
+                    gamerules.close();
+                }
+            }
+        });
+
+        //Dice value Label
         randInt = new Label("ِDice Value : 0");
         randInt.setFont(new Font(22));
         randInt.setTextFill(Color.DARKRED);
-        randInt.setTranslateX((width*80) + 5);
+        randInt.setTranslateX((width * 80) + 5);
         randInt.setTranslateY(300);
 
+        //Status label
         whoTurn = new Label("Start the game \rfor playing");
         whoTurn.setFont(new Font(20));
         whoTurn.setTextFill(Color.CORNFLOWERBLUE);
-        whoTurn.setTranslateX((width*80) + 5);
+        whoTurn.setTranslateX((width * 80) + 5);
         whoTurn.setTranslateY(220);
 
-        /*
-        creating a snake image and showing it:
-            first we set the location.
-            then we use Imageview to show it
-         */
+        //Creating Snakes
+        snake[1] = new Circle(40);
+        snake[1].setId("snake");
+        snake[1].setStroke(Color.BLACK);
+        snake[1].setFill(Color.RED);
+        snake[1].setTranslateX((7*80)-40);
+        snake[1].setTranslateY((6*80)-40);
 
-        tileGroup.getChildren().addAll(playerOne, playerTwo, btn, btnTwo, gameStartBtn, randInt, whoTurn);
+        //Filling pane with items
+        tileGroup.getChildren().addAll(playerOne, playerTwo, btn, btnTwo, gameStartBtn, randInt, whoTurn, creatorBtn, rulesbtn, snake[1]);
         return root;
     }
 
-    //main function; nothing special
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    //creating dice functionality
+    //Creating dice functionality
     private void getRandomNumberForDice(){
         rand = (int)(Math.random()*6+1);
     }
-    //rules for moving player one
+
+    //Rules for moving player one
     private void movePlayerOne(){
         if(onesFirstStart) {
             for (int i = 0; i < rand; i++) {
@@ -271,11 +332,13 @@ public class GameMainLoader extends Application {
                     playerOneyPos = 40;
                     randInt.setText("player One Won!");
                     gameStartBtn.setText("Start Again!");
+                    gameStart = false;
                 }
             }
         }
     }
-    //rules for moving player two
+
+    //Rules for moving player two
     private void movePlayerTwo(){
         if(twosFirstStart){
         for(int i = 0; i < rand; i++){
@@ -301,12 +364,14 @@ public class GameMainLoader extends Application {
                 playerTwoyPos = 40;
                 randInt.setText("player Two Won!");
                 gameStartBtn.setText("Start Again!");
+                gameStart = false;
             }
         }
         }
 
     }
-    //creating main animation for moving players
+
+    //Creating main animation for moving players
     private void translatePlayer(int x, int y, Circle b){
         TranslateTransition animate = new TranslateTransition(Duration.millis(1000), b);
         animate.setToX(x);
@@ -314,12 +379,18 @@ public class GameMainLoader extends Application {
         animate.setAutoReverse(false);
         animate.play();
     }
-    //required start function. it's used to start the game
+
+    //Required start function
     @Override
     public void start(Stage stage) throws Exception {
         Scene scene = new Scene(createContent());
         stage.setTitle("Snake and Ladder");
         stage.setScene(scene);
         stage.show();
+    }
+
+    //Main function; nothing special
+    public static void main(String[] args) {
+        launch(args);
     }
 }
