@@ -7,10 +7,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -33,8 +30,8 @@ public class GameMainLoader extends Application {
 
     public Circle playerOne;
     public Circle playerTwo;
-    public Circle[] snake = new Circle[10];
-    public Circle ladder;
+    public Circle[] snake;
+    public Circle[] ladder;
 
     public Button btn, btnTwo;
 
@@ -60,6 +57,46 @@ public class GameMainLoader extends Application {
     Players, tiles, snakes and ladders are some objects that are available here
      */
     private Group tileGroup = new Group();
+    private Group FirstScene = new Group();
+    //Menu Scene
+    private Parent mainScene(){
+        Pane rroot = new Pane();
+        rroot.setPrefSize(800, 900);
+        rroot.getChildren().addAll(FirstScene);
+
+        Label gameText = new Label("Snakes and Ladders");
+        gameText.setFont(new Font(45));
+        gameText.setTranslateY(260);
+        gameText.setTranslateX(210);
+
+        //Snake numbers field
+        Label snakeNumLabel = new Label("Enter the number of \rsnakes: ");
+        snakeNumLabel.setFont(new Font(16));
+        snakeNumLabel.setTextFill(Color.RED);
+        snakeNumLabel.setTranslateX(320);
+        snakeNumLabel.setTranslateY(320);
+        TextField snakeNumTextField = new TextField("0");
+        snakeNumTextField.setTranslateY(380);
+        snakeNumTextField.setTranslateX(320);
+
+        //Ladder numbers field
+        Label ladderNumLabel = new Label("Enter the number of \rLadders: ");
+        ladderNumLabel.setFont(new Font(16));
+        ladderNumLabel.setTextFill(Color.RED);
+        ladderNumLabel.setTranslateX(320);
+        ladderNumLabel.setTranslateY(420);
+        TextField ladderNumTextField = new TextField("0");
+        ladderNumTextField.setTranslateY(480);
+        ladderNumTextField.setTranslateX(320);
+        Button start = new Button("Start the game");
+        start.setTranslateX(320);
+        start.setTranslateY(510);
+
+        FirstScene.getChildren().addAll(snakeNumLabel, snakeNumTextField, ladderNumLabel, ladderNumTextField, start, gameText);
+        return rroot;
+    }
+
+    //Game Scene
     private Parent createContent() {
         Pane root = new Pane();
 
@@ -202,6 +239,10 @@ public class GameMainLoader extends Application {
             }
         });
 
+        TextInputDialog snakeInput = new TextInputDialog("0");
+        snakeInput.setHeaderText("Enter Snakes number: ");
+        TextInputDialog ladderInput = new TextInputDialog("0");
+        ladderInput.setHeaderText("Enter Ladders number: ");
         //A button for starting the game. it can be used to Restart the game as well
         gameStartBtn = new Button("Start the game");
         gameStartBtn.setTranslateX((width * 80) + 10);
@@ -211,6 +252,49 @@ public class GameMainLoader extends Application {
         gameStartBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                snakeInput.showAndWait();
+                snakeNumber = Integer.parseInt(snakeInput.getResult());
+                snake = new Circle[snakeNumber];
+                System.out.println(snakeInput.getResult());
+                for (int i = 0; i < snakeNumber; i++){
+                    snake[i] = new Circle(45);
+                    snake[i].setId("Snake");
+                    snake[i].setStroke(Color.BLACK);
+                    snake[i].setFill(Color.RED);
+
+                    TextInputDialog snakey = new TextInputDialog("");
+                    snakey.setHeaderText("Snake number" + i + "Y position: ");
+                    snakey.showAndWait();
+                    snake[i].setTranslateY(Integer.parseInt((snakey.getResult())) * 80 - 40);
+
+                    TextInputDialog snakex = new TextInputDialog("");
+                    snakex.setHeaderText("Snake number" + i + "X position: ");
+                    snakex.showAndWait();
+                    snake[i].setTranslateX(Integer.parseInt((snakey.getResult())) * 80);
+                    root.getChildren().addAll(snake[i]);
+                }
+
+                ladderInput.showAndWait();
+                ladderNumber = Integer.parseInt(ladderInput.getResult());
+                System.out.println(ladderInput.getResult());
+
+                for (int i = 0; i < ladderNumber; i++){
+                    ladder[i] = new Circle(45);
+                    ladder[i].setId("ladder");
+                    ladder[i].setStroke(Color.BLACK);
+                    ladder[i].setFill(Color.GREEN);
+
+                    TextInputDialog laddery = new TextInputDialog("");
+                    laddery.setHeaderText("ladder number " + i + " Y position: ");
+                    laddery.showAndWait();
+                    ladder[i].setTranslateY(Integer.parseInt((laddery.getResult())) * 80 - 40);
+
+                    TextInputDialog ladderx = new TextInputDialog("");
+                    ladderx.setHeaderText("ladder number " + i + " X position: ");
+                    ladderx.showAndWait();
+                    ladder[i].setTranslateX(Integer.parseInt((ladderx.getResult())) * 80);
+                    root.getChildren().addAll(ladder[i]);
+                }
                 gameStart = true;
                 gameStartBtn.setText("Game is Started");
                 gameStartBtn.setStyle("-fx-background-color: #0ec700");
@@ -288,16 +372,9 @@ public class GameMainLoader extends Application {
         whoTurn.setTranslateX((width * 80) + 5);
         whoTurn.setTranslateY(220);
 
-        //Creating Snakes
-        snake[1] = new Circle(40);
-        snake[1].setId("snake");
-        snake[1].setStroke(Color.BLACK);
-        snake[1].setFill(Color.RED);
-        snake[1].setTranslateX((7*80)-40);
-        snake[1].setTranslateY((6*80)-40);
 
         //Filling pane with items
-        tileGroup.getChildren().addAll(playerOne, playerTwo, btn, btnTwo, gameStartBtn, randInt, whoTurn, creatorBtn, rulesbtn, snake[1]);
+        tileGroup.getChildren().addAll(playerOne, playerTwo, btn, btnTwo, gameStartBtn, randInt, whoTurn, creatorBtn, rulesbtn);
         return root;
     }
 
@@ -313,14 +390,17 @@ public class GameMainLoader extends Application {
                 if (positionCirOne % 2 == 1) {
                     playerOnexPos += 80;
                 }
+
                 if (positionCirOne % 2 == 0) {
                     playerOnexPos -= 80;
                 }
+
                 if (playerOnexPos > (width * 80 - 40)) {
                     playerOneyPos -= 80;
                     playerOnexPos -= 80;
                     positionCirOne++;
                 }
+
                 if (playerOnexPos < 40) {
                     playerOneyPos -= 80;
                     playerOnexPos += 80;
@@ -334,6 +414,12 @@ public class GameMainLoader extends Application {
                     gameStartBtn.setText("Start Again!");
                     gameStart = false;
                 }
+
+                /*for(int j = 0; j<snake.length; j++){
+                    if(playerTwo.getBoundsInParent().intersects(snake[1].getBoundsInParent())){
+                        System.out.println("Collision");
+                    }
+                }*/
             }
         }
     }
@@ -345,14 +431,17 @@ public class GameMainLoader extends Application {
             if(positionCirTwo %2 == 1){
                 playerTwoxPos += 80;
             }
+
             if(positionCirTwo%2 == 0){
                 playerTwoxPos -=80;
             }
+
             if(playerTwoxPos > (width*80-40)){
                 playerTwoyPos -=80;
                 playerTwoxPos -=80;
                 positionCirTwo ++;
             }
+
             if(playerTwoxPos < 40){
                 playerTwoyPos -= 80;
                 playerTwoxPos += 80;
@@ -366,6 +455,12 @@ public class GameMainLoader extends Application {
                 gameStartBtn.setText("Start Again!");
                 gameStart = false;
             }
+
+            /*for(int j = 0; j<snake.length; j++){
+                if(playerTwo.getBoundsInParent().intersects(snake[1].getBoundsInParent())){
+                    System.out.println("Collision");
+                }
+            }*/
         }
         }
 
@@ -383,9 +478,10 @@ public class GameMainLoader extends Application {
     //Required start function
     @Override
     public void start(Stage stage) throws Exception {
-        Scene scene = new Scene(createContent());
+        Scene sceneOne = new Scene(mainScene());
+        Scene sceneTwo = new Scene(createContent());
         stage.setTitle("Snake and Ladder");
-        stage.setScene(scene);
+        stage.setScene(sceneTwo);
         stage.show();
     }
 
