@@ -252,34 +252,35 @@ public class GameMainLoader extends Application {
         gameStartBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                //Adding snakes based on user input
                 snakeInput.showAndWait();
                 snakeNumber = Integer.parseInt(snakeInput.getResult());
                 snake = new Circle[snakeNumber];
                 System.out.println(snakeInput.getResult());
                 for (int i = 0; i < snakeNumber; i++){
-                    snake[i] = new Circle(45);
+                    snake[i] = new Circle(40);
                     snake[i].setId("Snake");
                     snake[i].setStroke(Color.BLACK);
                     snake[i].setFill(Color.RED);
 
                     TextInputDialog snakey = new TextInputDialog("");
-                    snakey.setHeaderText("Snake number" + i + "Y position: ");
+                    snakey.setHeaderText("Snake number" + i + " Y position: ");
                     snakey.showAndWait();
                     snake[i].setTranslateY(Integer.parseInt((snakey.getResult())) * 80 - 40);
 
                     TextInputDialog snakex = new TextInputDialog("");
-                    snakex.setHeaderText("Snake number" + i + "X position: ");
+                    snakex.setHeaderText("Snake number" + i + " X position: ");
                     snakex.showAndWait();
-                    snake[i].setTranslateX(Integer.parseInt((snakey.getResult())) * 80);
+                    snake[i].setTranslateX(Integer.parseInt((snakey.getResult())) * 80 - 40);
                     root.getChildren().addAll(snake[i]);
                 }
-
+                //Adding ladders based on user input
                 ladderInput.showAndWait();
                 ladderNumber = Integer.parseInt(ladderInput.getResult());
                 System.out.println(ladderInput.getResult());
-
+                ladder = new Circle[ladderNumber];
                 for (int i = 0; i < ladderNumber; i++){
-                    ladder[i] = new Circle(45);
+                    ladder[i] = new Circle(40);
                     ladder[i].setId("ladder");
                     ladder[i].setStroke(Color.BLACK);
                     ladder[i].setFill(Color.GREEN);
@@ -292,7 +293,7 @@ public class GameMainLoader extends Application {
                     TextInputDialog ladderx = new TextInputDialog("");
                     ladderx.setHeaderText("ladder number " + i + " X position: ");
                     ladderx.showAndWait();
-                    ladder[i].setTranslateX(Integer.parseInt((ladderx.getResult())) * 80);
+                    ladder[i].setTranslateX(Integer.parseInt((ladderx.getResult())) * 80 - 40);
                     root.getChildren().addAll(ladder[i]);
                 }
                 gameStart = true;
