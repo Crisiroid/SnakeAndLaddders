@@ -21,10 +21,12 @@ public class GameMainLoader extends Application {
     public int rand;
     public Label randInt;
     public Label whoTurn;
+    public Label[] snakeNumberLabel;
+    public Label[] ladderNumberLabel;
 
     public static final int t_size = 80;
-    public static final int width = 12;
-    public static final int height = 12;
+    public static final int width = 8;
+    public static final int height = 8;
     public int snakeNumber = 3;
     public int ladderNumber = 4;
 
@@ -99,6 +101,8 @@ public class GameMainLoader extends Application {
     //Game Scene
     private Parent createContent() {
         Pane root = new Pane();
+        Pane ladderAndLabel = new Pane();
+        Pane snakeAndLabel = new Pane();
 
         //Setting the main size for Our root pane. it can be changed dynamically
         root.setPrefSize((width * t_size) + 160, (height * t_size));
@@ -243,6 +247,7 @@ public class GameMainLoader extends Application {
         snakeInput.setHeaderText("Enter Snakes number: ");
         TextInputDialog ladderInput = new TextInputDialog("0");
         ladderInput.setHeaderText("Enter Ladders number: ");
+
         //A button for starting the game. it can be used to Restart the game as well
         gameStartBtn = new Button("Start the game");
         gameStartBtn.setTranslateX((width * 80) + 10);
@@ -252,49 +257,85 @@ public class GameMainLoader extends Application {
         gameStartBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                snakeAndLabel.getChildren().removeAll();
+                ladderAndLabel.getChildren().removeAll();
+                root.getChildren().remove(ladderAndLabel);
+                root.getChildren().remove(snakeAndLabel);
                 //Adding snakes based on user input
                 snakeInput.showAndWait();
                 snakeNumber = Integer.parseInt(snakeInput.getResult());
                 snake = new Circle[snakeNumber];
+                snakeNumberLabel = new Label[snakeNumber];
                 System.out.println(snakeInput.getResult());
-                for (int i = 0; i < snakeNumber; i++){
-                    snake[i] = new Circle(40);
-                    snake[i].setId("Snake");
-                    snake[i].setStroke(Color.BLACK);
-                    snake[i].setFill(Color.RED);
+                try{
+                    for (int i = 0; i < snakeNumber; i++){
 
-                    TextInputDialog snakey = new TextInputDialog("");
-                    snakey.setHeaderText("Snake number" + i + " Y position: ");
-                    snakey.showAndWait();
-                    snake[i].setTranslateY(Integer.parseInt((snakey.getResult())) * 80 - 40);
+                        snake[i] = new Circle(40);
+                        snake[i].setId("Snake");
+                        snake[i].setStroke(Color.BLACK);
+                        snake[i].setFill(Color.RED);
 
-                    TextInputDialog snakex = new TextInputDialog("");
-                    snakex.setHeaderText("Snake number" + i + " X position: ");
-                    snakex.showAndWait();
-                    snake[i].setTranslateX(Integer.parseInt((snakey.getResult())) * 80 - 40);
-                    root.getChildren().addAll(snake[i]);
+                        TextInputDialog snakey = new TextInputDialog("");
+                        snakey.setHeaderText("Enter Snake number " + i + " Y position: ");
+                        snakey.showAndWait();
+                        snake[i].setTranslateY(Integer.parseInt((snakey.getResult())) * 80 - 40);
+
+                        TextInputDialog snakex = new TextInputDialog("");
+                        snakex.setHeaderText("Enter Snake number " + i + " X position: ");
+                        snakex.showAndWait();
+                        snake[i].setTranslateX(Integer.parseInt((snakex.getResult())) * 80 - 40);
+
+                        TextInputDialog snakeVal = new TextInputDialog("");
+                        snakeVal.setHeaderText("Enter Snake Number " + i + " value:");
+                        snakeVal.showAndWait();
+                        snakeNumberLabel[i] = new Label(String.valueOf(snakeVal.getResult()));
+                        snakeNumberLabel[i].setFont(new Font(25));
+                        snakeNumberLabel[i].setTranslateY(snake[i].getTranslateY());
+                        snakeNumberLabel[i].setTranslateX(snake[i].getTranslateX());
+
+                        snakeAndLabel.getChildren().addAll(snake[i], snakeNumberLabel[i]);
+                        root.getChildren().addAll(snakeAndLabel);
+                    }
+                }catch (Exception e){
+                    System.out.println(e);
                 }
                 //Adding ladders based on user input
                 ladderInput.showAndWait();
                 ladderNumber = Integer.parseInt(ladderInput.getResult());
                 System.out.println(ladderInput.getResult());
                 ladder = new Circle[ladderNumber];
-                for (int i = 0; i < ladderNumber; i++){
-                    ladder[i] = new Circle(40);
-                    ladder[i].setId("ladder");
-                    ladder[i].setStroke(Color.BLACK);
-                    ladder[i].setFill(Color.GREEN);
+                ladderNumberLabel = new Label[ladderNumber];
+                try{
+                    for (int i = 0; i < ladderNumber; i++){
+                        ladder[i] = new Circle(40);
+                        ladder[i].setId("ladder");
+                        ladder[i].setStroke(Color.BLACK);
+                        ladder[i].setFill(Color.GREEN);
 
-                    TextInputDialog laddery = new TextInputDialog("");
-                    laddery.setHeaderText("ladder number " + i + " Y position: ");
-                    laddery.showAndWait();
-                    ladder[i].setTranslateY(Integer.parseInt((laddery.getResult())) * 80 - 40);
+                        TextInputDialog laddery = new TextInputDialog("");
+                        laddery.setHeaderText("Ladder number " + i + " Y position: ");
+                        laddery.showAndWait();
+                        ladder[i].setTranslateY(Integer.parseInt((laddery.getResult())) * 80 - 40);
 
-                    TextInputDialog ladderx = new TextInputDialog("");
-                    ladderx.setHeaderText("ladder number " + i + " X position: ");
-                    ladderx.showAndWait();
-                    ladder[i].setTranslateX(Integer.parseInt((ladderx.getResult())) * 80 - 40);
-                    root.getChildren().addAll(ladder[i]);
+                        TextInputDialog ladderx = new TextInputDialog("");
+                        ladderx.setHeaderText("Ladder number " + i + " X position: ");
+                        ladderx.showAndWait();
+                        ladder[i].setTranslateX(Integer.parseInt((ladderx.getResult())) * 80 - 40);
+
+                        TextInputDialog ladderVal = new TextInputDialog("");
+                        ladderVal.setHeaderText("Enter Ladder number " + i + " value:");
+                        ladderVal.showAndWait();
+                        ladderNumberLabel[i] = new Label(String.valueOf(ladderVal.getResult()));
+                        ladderNumberLabel[i].setFont(new Font(22));
+                        ladderNumberLabel[i].setTranslateX(ladder[i].getTranslateX());
+                        ladderNumberLabel[i].setTranslateY(ladder[i].getTranslateY());
+
+
+                        ladderAndLabel.getChildren().addAll(ladder[i]);
+                        root.getChildren().addAll(ladderAndLabel);
+                    }
+                }catch(Exception e){
+                    System.out.println(e);
                 }
                 gameStart = true;
                 gameStartBtn.setText("Game is Started");
@@ -416,12 +457,53 @@ public class GameMainLoader extends Application {
                     gameStart = false;
                 }
 
-                /*for(int j = 0; j<snake.length; j++){
-                    if(playerTwo.getBoundsInParent().intersects(snake[1].getBoundsInParent())){
-                        System.out.println("Collision");
-                    }
-                }*/
             }
+
+            //Snake Collision detection
+            int s = 0;
+            for(int j = 0; j < snakeNumber; j++){
+                if(playerOne.getBoundsInParent().intersects(snake[j].getBoundsInParent())){
+                    //s ++;
+                    if (positionCirOne % 2 == 1) {
+                        playerOneyPos += 80 * Integer.parseInt(snakeNumberLabel[j].getText());
+                        positionCirOne++;
+                    }
+                    if (positionCirOne % 2 == 0) {
+                        playerOneyPos += 80 * Integer.parseInt(snakeNumberLabel[j].getText());
+                        positionCirOne--;
+                    }
+                    System.out.println("s: " + s);
+                    System.out.println("Collision " + j);
+                    break;
+                }
+            }
+            /*if(s != 0){
+
+                s = 0;
+            }*/
+
+            //Ladder Collision detection
+            int ls = 0;
+            for(int j = 0; j < ladderNumber; j++){
+                if(playerOne.getBoundsInParent().intersects(ladder[j].getBoundsInParent())){
+                    //ls ++;
+                    if (positionCirOne % 2 == 1) {
+                        playerOneyPos -= 80 * Integer.parseInt(ladderNumberLabel[j].getText());
+                        positionCirOne--;
+                    }
+                    if (positionCirOne % 2 == 0) {
+                        playerOneyPos -= 80 * Integer.parseInt(ladderNumberLabel[j].getText());
+                        positionCirOne++;
+                    }
+                    System.out.println("ls: " + ls);
+                    System.out.println("Collision " + j);
+                    break;
+                }
+            }
+            /*if(ls != 0){
+
+                ls = 0;
+            }*/
         }
     }
 
@@ -457,12 +539,55 @@ public class GameMainLoader extends Application {
                 gameStart = false;
             }
 
-            /*for(int j = 0; j<snake.length; j++){
-                if(playerTwo.getBoundsInParent().intersects(snake[1].getBoundsInParent())){
-                    System.out.println("Collision");
-                }
-            }*/
+
         }
+            //Snake Collision Detection
+            int s = 0;
+            for(int j = 0; j < snakeNumber; j++){
+                if(playerTwo.getBoundsInParent().intersects(snake[j].getBoundsInParent())){
+                    //s ++;
+                    if(positionCirTwo %2 == 1){
+                        playerTwoyPos += 80 * Integer.parseInt(snakeNumberLabel[j].getText());
+                        positionCirTwo ++;
+                    }
+
+                    if(positionCirTwo%2 == 0){
+                        playerTwoyPos += 80 * Integer.parseInt(snakeNumberLabel[j].getText());
+                        positionCirTwo --;
+                    }
+                    System.out.println("s: " + s);
+                    System.out.println("Collision " + j);
+                    break;
+                }
+            }
+            /*if(s != 0){
+
+                s = 0;
+            }*/
+
+            //Ladder Collision Detection
+            int ls = 0;
+            for(int j = 0; j < ladderNumber; j++){
+                if(playerTwo.getBoundsInParent().intersects(ladder[j].getBoundsInParent())){
+                    //ls ++;
+                    if(positionCirTwo %2 == 1){
+                        playerTwoyPos -= 80 * Integer.parseInt(ladderNumberLabel[j].getText());
+                        positionCirTwo --;
+                    }
+
+                    if(positionCirTwo%2 == 0){
+                        playerTwoyPos -= 80 * Integer.parseInt(ladderNumberLabel[j].getText());
+                        positionCirTwo ++;
+                    }
+                    System.out.println("ls: " + ls);
+                    System.out.println("Collision " + j);
+                    break;
+                }
+            }
+            /*if(ls != 0){
+
+                ls = 0;
+            }*/
         }
 
     }
