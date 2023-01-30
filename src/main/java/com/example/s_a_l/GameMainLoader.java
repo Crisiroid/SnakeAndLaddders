@@ -25,8 +25,8 @@ public class GameMainLoader extends Application {
     public Label[] ladderNumberLabel;
 
     public static final int t_size = 80;
-    public static final int width = 8;
-    public static final int height = 8;
+    public static final int width = 10;
+    public static final int height = 10;
     public int snakeNumber = 3;
     public int ladderNumber = 4;
 
@@ -247,7 +247,6 @@ public class GameMainLoader extends Application {
         snakeInput.setHeaderText("Enter Snakes number: ");
         TextInputDialog ladderInput = new TextInputDialog("0");
         ladderInput.setHeaderText("Enter Ladders number: ");
-
         //A button for starting the game. it can be used to Restart the game as well
         gameStartBtn = new Button("Start the game");
         gameStartBtn.setTranslateX((width * 80) + 10);
@@ -261,6 +260,7 @@ public class GameMainLoader extends Application {
                 ladderAndLabel.getChildren().removeAll();
                 root.getChildren().remove(ladderAndLabel);
                 root.getChildren().remove(snakeAndLabel);
+
                 //Adding snakes based on user input
                 snakeInput.showAndWait();
                 snakeNumber = Integer.parseInt(snakeInput.getResult());
@@ -268,7 +268,7 @@ public class GameMainLoader extends Application {
                 snakeNumberLabel = new Label[snakeNumber];
                 System.out.println(snakeInput.getResult());
                 try{
-                    for (int i = 0; i < snakeNumber; i++){
+                    for (int i = 0; i < snakeNumber+1; i++){
 
                         snake[i] = new Circle(40);
                         snake[i].setId("Snake");
@@ -294,11 +294,14 @@ public class GameMainLoader extends Application {
                         snakeNumberLabel[i].setTranslateX(snake[i].getTranslateX());
 
                         snakeAndLabel.getChildren().addAll(snake[i], snakeNumberLabel[i]);
-                        root.getChildren().addAll(snakeAndLabel);
                     }
+
                 }catch (Exception e){
                     System.out.println(e);
                 }
+                root.getChildren().addAll(snakeAndLabel);
+
+
                 //Adding ladders based on user input
                 ladderInput.showAndWait();
                 ladderNumber = Integer.parseInt(ladderInput.getResult());
@@ -306,7 +309,7 @@ public class GameMainLoader extends Application {
                 ladder = new Circle[ladderNumber];
                 ladderNumberLabel = new Label[ladderNumber];
                 try{
-                    for (int i = 0; i < ladderNumber; i++){
+                    for (int i = 0; i < ladderNumber+1; i++){
                         ladder[i] = new Circle(40);
                         ladder[i].setId("ladder");
                         ladder[i].setStroke(Color.BLACK);
@@ -331,12 +334,12 @@ public class GameMainLoader extends Application {
                         ladderNumberLabel[i].setTranslateY(ladder[i].getTranslateY());
 
 
-                        ladderAndLabel.getChildren().addAll(ladder[i]);
-                        root.getChildren().addAll(ladderAndLabel);
+                        ladderAndLabel.getChildren().addAll(ladder[i], ladderNumberLabel[i]);
                     }
                 }catch(Exception e){
                     System.out.println(e);
                 }
+                root.getChildren().addAll(ladderAndLabel);
                 gameStart = true;
                 gameStartBtn.setText("Game is Started");
                 gameStartBtn.setStyle("-fx-background-color: #0ec700");
@@ -456,140 +459,112 @@ public class GameMainLoader extends Application {
                     gameStartBtn.setText("Start Again!");
                     gameStart = false;
                 }
-
             }
-
-            //Snake Collision detection
-            int s = 0;
-            for(int j = 0; j < snakeNumber; j++){
+            for(int j = 0; j<snake.length; j++){
                 if(playerOne.getBoundsInParent().intersects(snake[j].getBoundsInParent())){
-                    //s ++;
                     if (positionCirOne % 2 == 1) {
                         playerOneyPos += 80 * Integer.parseInt(snakeNumberLabel[j].getText());
                         positionCirOne++;
+                        break;
                     }
                     if (positionCirOne % 2 == 0) {
                         playerOneyPos += 80 * Integer.parseInt(snakeNumberLabel[j].getText());
                         positionCirOne--;
+                        break;
                     }
-                    System.out.println("s: " + s);
                     System.out.println("Collision " + j);
-                    break;
+
                 }
             }
-            /*if(s != 0){
 
-                s = 0;
-            }*/
-
-            //Ladder Collision detection
             int ls = 0;
-            for(int j = 0; j < ladderNumber; j++){
-                if(playerOne.getBoundsInParent().intersects(ladder[j].getBoundsInParent())){
+            for(int k = 0; k < ladder.length; k++) {
+                if (playerOne.getBoundsInParent().intersects(ladder[k].getBoundsInParent())) {
                     //ls ++;
                     if (positionCirOne % 2 == 1) {
-                        playerOneyPos -= 80 * Integer.parseInt(ladderNumberLabel[j].getText());
+                        playerOneyPos -= 80 * Integer.parseInt(ladderNumberLabel[k].getText());
                         positionCirOne--;
+                        break;
                     }
                     if (positionCirOne % 2 == 0) {
-                        playerOneyPos -= 80 * Integer.parseInt(ladderNumberLabel[j].getText());
+                        playerOneyPos -= 80 * Integer.parseInt(ladderNumberLabel[k].getText());
                         positionCirOne++;
+                        break;
                     }
-                    System.out.println("ls: " + ls);
-                    System.out.println("Collision " + j);
-                    break;
+                    System.out.println("Collision " + k);
                 }
             }
-            /*if(ls != 0){
-
-                ls = 0;
-            }*/
         }
     }
 
     //Rules for moving player two
     private void movePlayerTwo(){
         if(twosFirstStart){
-        for(int i = 0; i < rand; i++){
-            if(positionCirTwo %2 == 1){
-                playerTwoxPos += 80;
-            }
+            for(int i = 0; i < rand; i++){
+                if(positionCirTwo %2 == 1){
+                    playerTwoxPos += 80;
+                }
 
-            if(positionCirTwo%2 == 0){
-                playerTwoxPos -=80;
-            }
+                if(positionCirTwo%2 == 0){
+                    playerTwoxPos -=80;
+                }
 
-            if(playerTwoxPos > (width*80-40)){
-                playerTwoyPos -=80;
-                playerTwoxPos -=80;
-                positionCirTwo ++;
-            }
+                if(playerTwoxPos > (width*80-40)){
+                    playerTwoyPos -=80;
+                    playerTwoxPos -=80;
+                    positionCirTwo ++;
+                }
 
-            if(playerTwoxPos < 40){
-                playerTwoyPos -= 80;
-                playerTwoxPos += 80;
-                positionCirTwo ++;
-            }
+                if(playerTwoxPos < 40){
+                    playerTwoyPos -= 80;
+                    playerTwoxPos += 80;
+                    positionCirTwo ++;
+                }
 
-            if(playerTwoxPos < 30 || playerTwoyPos < 30){
-                playerTwoxPos = 40;
-                playerTwoyPos = 40;
-                randInt.setText("player Two Won!");
-                gameStartBtn.setText("Start Again!");
-                gameStart = false;
-            }
+                if(playerTwoxPos < 30 || playerTwoyPos < 30){
+                    playerTwoxPos = 40;
+                    playerTwoyPos = 40;
+                    randInt.setText("player Two Won!");
+                    gameStartBtn.setText("Start Again!");
+                    gameStart = false;
+                }
 
-
-        }
-            //Snake Collision Detection
-            int s = 0;
-            for(int j = 0; j < snakeNumber; j++){
-                if(playerTwo.getBoundsInParent().intersects(snake[j].getBoundsInParent())){
-                    //s ++;
+            for(int j = 0; j<snake.length; j++){
+                if(playerTwo.getBoundsInParent().intersects(snake[1].getBoundsInParent())){
                     if(positionCirTwo %2 == 1){
                         playerTwoyPos += 80 * Integer.parseInt(snakeNumberLabel[j].getText());
                         positionCirTwo ++;
+                        break;
                     }
 
                     if(positionCirTwo%2 == 0){
                         playerTwoyPos += 80 * Integer.parseInt(snakeNumberLabel[j].getText());
                         positionCirTwo --;
+                        break;
                     }
-                    System.out.println("s: " + s);
                     System.out.println("Collision " + j);
-                    break;
                 }
             }
-            /*if(s != 0){
 
-                s = 0;
-            }*/
+                for(int k = 0; k < ladder.length; k++){
+                    if(playerTwo.getBoundsInParent().intersects(ladder[k].getBoundsInParent())){
+                        //ls ++;
+                        if(positionCirTwo %2 == 1){
+                            playerTwoyPos -= 80 * Integer.parseInt(ladderNumberLabel[k].getText());
+                            positionCirTwo --;
+                            break;
+                        }
 
-            //Ladder Collision Detection
-            int ls = 0;
-            for(int j = 0; j < ladderNumber; j++){
-                if(playerTwo.getBoundsInParent().intersects(ladder[j].getBoundsInParent())){
-                    //ls ++;
-                    if(positionCirTwo %2 == 1){
-                        playerTwoyPos -= 80 * Integer.parseInt(ladderNumberLabel[j].getText());
-                        positionCirTwo --;
+                        if(positionCirTwo%2 == 0){
+                            playerTwoyPos -= 80 * Integer.parseInt(ladderNumberLabel[k].getText());
+                            positionCirTwo ++;
+                            break;
+                        }
+                        System.out.println("Collision " + k);
                     }
-
-                    if(positionCirTwo%2 == 0){
-                        playerTwoyPos -= 80 * Integer.parseInt(ladderNumberLabel[j].getText());
-                        positionCirTwo ++;
-                    }
-                    System.out.println("ls: " + ls);
-                    System.out.println("Collision " + j);
-                    break;
                 }
             }
-            /*if(ls != 0){
-
-                ls = 0;
-            }*/
         }
-
     }
 
     //Creating main animation for moving players
